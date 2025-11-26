@@ -1,0 +1,30 @@
+gym-scheduler/
+├── index.html
+├── manifest.json
+├── sw.js (service worker)
+├── css/
+│   └── styles.css
+├── js/
+│   ├── app.js
+│   ├── components/
+│   │   ├── GymScheduler.js
+│   │   ├── ActualsModal.js
+│   │   └── Icons.js
+│   ├── data/
+│   │   ├── exercises.js
+│   │   └── quotes.js
+│   └── utils/
+│       ├── storage.js
+│       ├── calendar.js
+│       └── dateUtils.js
+├── icons/
+│   ├── icon-72x72.png
+│   ├── icon-96x96.png
+│   ├── icon-128x128.png
+│   ├── icon-144x144.png
+│   ├── icon-152x152.png
+│   ├── icon-192x192.png
+│   ├── icon-384x384.png
+│   ├── icon-512x512.png
+│   └── apple-touch-icon.png
+└── offline.html

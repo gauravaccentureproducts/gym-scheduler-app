@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Plan, track, and manage your gym workouts with ease. Schedule exercises, record actuals, and sync with your calendar.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gym Scheduler">
+    
+    <title>Gym Scheduler - Your Personal Workout Planner</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-152x152.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://unpkg.com">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js" defer></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" defer></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" defer></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- App Root -->
+    <div id="root">
+        <div class="min-h-screen bg-black flex items-center justify-center">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+    <!-- Install Prompt -->
+    <div id="install-prompt" class="hidden fixed bottom-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-xl z-50 max-w-md mx-auto">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex-1">
+                <p class="font-semibold">Install Gym Scheduler</p>
+                <p class="text-sm text-blue-100">Add to home screen for quick access</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="install-button" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm">
+                    Install
+                </button>
+                <button id="install-dismiss" class="text-white px-4 py-2 rounded-lg text-sm">
+                    Later
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Offline Indicator -->
+    <div id="offline-indicator" class="hidden fixed top-0 left-0 right-0 bg-red-600 text-white text-center py-2 z-50">
+        ⚠️ You are offline. Some features may be limited.
+    </div>
+    
+    <!-- Update Available -->
+    <div id="update-prompt" class="hidden fixed bottom-4 left-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-xl z-50 max-w-md mx-auto">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex-1">
+                <p class="font-semibold">Update Available</p>
+                <p class="text-sm text-green-100">A new version is ready to install</p>
+            </div>
+            <button id="update-button" class="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold text-sm">
+                Update
+            </button>
+        </div>
+    </div>
+    
+    <!-- Error Boundary Fallback -->
+    <div id="error-fallback" class="hidden min-h-screen bg-black flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-2xl p-8 max-w-md text-center border border-gray-800">
+            <div class="text-6xl mb-4">⚠️</div>
+            <h1 class="text-2xl font-bold text-white mb-4">Something went wrong</h1>
+            <p class="text-gray-400 mb-6">We're sorry, but something unexpected happened.</p>
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                Reload App
+            </button>
+        </div>
+    </div>
+    
+    <!-- App Scripts - Load in Order -->
+    <script type="text/babel" src="js/data/exercises.js" data-type="module"></script>
+    <script type="text/babel" src="js/data/quotes.js" data-type="module"></script>
+    <script type="text/babel" src="js/utils/dateUtils.js" data-type="module"></script>
+    <script type="text/babel" src="js/utils/storage.js" data-type="module"></script>
+    <script type="text/babel" src="js/utils/calendar.js" data-type="module"></script>
+    <script type="text/babel" src="js/components/Icons.js" data-type="module"></script>
+    <script type="text/babel" src="js/components/ActualsModal.js" data-type="module"></script>
+    <script type="text/babel" src="js/components/GymScheduler.js" data-type="module"></script>
+    <script type="text/babel" src="js/app.js" data-type="module"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New update available
+                                    showUpdatePrompt(registration);
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+        
+        // Install Prompt Handler
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Check if user previously dismissed
+            const dismissed = localStorage.getItem('install-prompt-dismissed');
+            const dismissedTime = dismissed ? parseInt(dismissed) : 0;
+            const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+            
+            // Show prompt if not dismissed or dismissed more than 7 days ago
+            if (!dismissed || daysSinceDismissed > 7) {
+                document.getElementById('install-prompt').classList.remove('hidden');
+            }
+        });
+        
+        document.getElementById('install-button')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response: ${outcome}`);
+                deferredPrompt = null;
+                document.getElementById('install-prompt').classList.add('hidden');
+            }
+        });
+        
+        document.getElementById('install-dismiss')?.addEventListener('click', () => {
+            document.getElementById('install-prompt').classList.add('hidden');
+            localStorage.setItem('install-prompt-dismissed', Date.now().toString());
+        });
+        
+        // Update Prompt Handler
+        function showUpdatePrompt(registration) {
+            document.getElementById('update-prompt').classList.remove('hidden');
+            
+            document.getElementById('update-button').addEventListener('click', () => {
+                if (registration.waiting) {
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    window.location.reload();
+                }
+            });
+        }
+        
+        // Online/Offline Detection
+        window.addEventListener('online', () => {
+            document.getElementById('offline-indicator').classList.add('hidden');
+        });
+        
+        window.addEventListener('offline', () => {
+            document.getElementById('offline-indicator').classList.remove('hidden');
+        });
+        
+        // Check initial state
+        if (!navigator.onLine) {
+            document.getElementById('offline-indicator').classList.remove('hidden');
+        }
+        
+        // Global Error Handler
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            document.getElementById('root').classList.add('hidden');
+            document.getElementById('error-fallback').classList.remove('hidden');
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+    </script>
+</body>
+</html>
