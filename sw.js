@@ -19,10 +19,6 @@ const PRECACHE_URLS = [
   '/gym-scheduler-app/js/utils/dateUtils.js',
   '/gym-scheduler-app/icons/icon-192x192.png',
   '/gym-scheduler-app/icons/icon-512x512.png',
-  'https://unpkg.com/react@18/umd/react.production.min.js',
-  'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-  'https://unpkg.com/@babel/standalone/babel.min.js',
-  'https://cdn.tailwindcss.com'
 ];
 
 // Install event - cache essential files
@@ -115,3 +111,4 @@ async function syncWorkouts() {
   // Placeholder for future sync functionality
   console.log('Background sync triggered');
 }
+
