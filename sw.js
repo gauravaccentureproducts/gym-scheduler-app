@@ -1,24 +1,24 @@
 const CACHE_NAME = 'gym-scheduler-v1.0.0';
 const RUNTIME_CACHE = 'gym-scheduler-runtime';
 
-// Files to cache immediately
+// Files to cache immediately - ADD BASE PATH TO ALL
 const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/offline.html',
-  '/manifest.json',
-  '/css/styles.css',
-  '/js/app.js',
-  '/js/components/GymScheduler.js',
-  '/js/components/ActualsModal.js',
-  '/js/components/Icons.js',
-  '/js/data/exercises.js',
-  '/js/data/quotes.js',
-  '/js/utils/storage.js',
-  '/js/utils/calendar.js',
-  '/js/utils/dateUtils.js',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/gym-scheduler-app/',
+  '/gym-scheduler-app/index.html',
+  '/gym-scheduler-app/offline.html',
+  '/gym-scheduler-app/manifest.json',
+  '/gym-scheduler-app/css/styles.css',
+  '/gym-scheduler-app/js/app.js',
+  '/gym-scheduler-app/js/components/GymScheduler.js',
+  '/gym-scheduler-app/js/components/ActualsModal.js',
+  '/gym-scheduler-app/js/components/Icons.js',
+  '/gym-scheduler-app/js/data/exercises.js',
+  '/gym-scheduler-app/js/data/quotes.js',
+  '/gym-scheduler-app/js/utils/storage.js',
+  '/gym-scheduler-app/js/utils/calendar.js',
+  '/gym-scheduler-app/js/utils/dateUtils.js',
+  '/gym-scheduler-app/icons/icon-192x192.png',
+  '/gym-scheduler-app/icons/icon-512x512.png',
   'https://unpkg.com/react@18/umd/react.production.min.js',
   'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
   'https://unpkg.com/@babel/standalone/babel.min.js',
@@ -55,10 +55,12 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin) && 
-      !event.request.url.startsWith('https://unpkg.com') &&
-      !event.request.url.startsWith('https://cdn.tailwindcss.com')) {
+  // Skip cross-origin requests except allowed CDNs
+  const url = new URL(event.request.url);
+  const isOwnOrigin = url.origin === self.location.origin;
+  const isAllowedCDN = url.hostname === 'unpkg.com' || url.hostname === 'cdn.tailwindcss.com';
+  
+  if (!isOwnOrigin && !isAllowedCDN) {
     return;
   }
 
@@ -89,7 +91,7 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         // Return offline page for navigation requests
         if (event.request.mode === 'navigate') {
-          return caches.match('/offline.html');
+          return caches.match('/gym-scheduler-app/offline.html');
         }
       })
   );
