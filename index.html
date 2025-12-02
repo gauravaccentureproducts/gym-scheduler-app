@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Plan, track, and manage your gym workouts with ease. Schedule exercises, record actuals, and sync with your calendar.">
     <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Gym Scheduler">
@@ -12,12 +13,12 @@
     <title>Gym Scheduler - Your Personal Workout Planner</title>
     
     <!-- Favicons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-152x152.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/gym-scheduler-app/icons/icon-152x152.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/gym-scheduler-app/icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/gym-scheduler-app/icons/apple-touch-icon.png">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/gym-scheduler-app/manifest.json">
     
     <!-- Preload Critical Resources -->
     <link rel="preconnect" href="https://unpkg.com">
@@ -91,21 +92,21 @@
     
     <!-- App Scripts - Load in Order -->
     <script type="text/babel" src="/gym-scheduler-app/js/data/exercises.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/data/quotes.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/utils/dateUtils.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/utils/storage.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/utils/calendar.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/components/Icons.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/components/ActualsModal.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/components/GymScheduler.js" data-type="module"></script>
-<script type="text/babel" src="/gym-scheduler-app/js/app.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/data/quotes.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/utils/dateUtils.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/utils/storage.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/utils/calendar.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/components/Icons.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/components/ActualsModal.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/components/GymScheduler.js" data-type="module"></script>
+    <script type="text/babel" src="/gym-scheduler-app/js/app.js" data-type="module"></script>
     
     <!-- Service Worker Registration -->
     <script>
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('/gym-scheduler-app/sw.js')
                     .then(registration => {
                         console.log('SW registered:', registration);
                         
@@ -195,4 +196,3 @@
     </script>
 </body>
 </html>
-
